@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Learning D3</title>
+	<link rel="stylesheet" href="main.css">
+	<script  type="text/javascript" src="d3.min.js"></script>
+</head>
+<body>
+<script>
+//Write your code here
+var data =[132,71,337,93,78,43,20,16,30,8,17,21]; 
+var dataMinValue = d3.min(data)
+var dataMaxValue = d3.max(data)
+var dataLoHiValue = d3.extent (data);
+//console.log(dataMinValue, dataMaxValue, dataLoHiValue);
+
+//var dataGreaterThan50 = data.filter(function(entry){
+//    return entry > 50; 
+//});
+//console.log("dataGreaterThan50:", dataGreaterThan50);
+
+//var donut ={key: "Glazed", value: 132};
+//console.log(donut.key, donut.value);
+
+var donuts = [
+	{key: "Glazed",		value: 132},
+	{key: "Jelly",		value: 71},
+	{key: "Holes",		value: 337},
+	{key: "Sprinkles",	value: 93},
+	{key: "Crumb",		value: 78},
+	{key: "Chocolate",	value: 43},
+	{key: "Coconut", 	value: 20},
+	{key: "Cream",		value: 16},
+	{key: "Cruller", 	value: 30},
+	{key: "Éclair", 	value: 8},
+	{key: "Fritter", 	value: 17},
+	{key: "Bearclaw", 	value: 21}
+];	
+
+var donutsMinValue = d3.min(donuts, function(d){
+     return d.value;
+});
+console.log(donutsMinValue);
+var donutsMaxValue = d3.max(donuts, function(d){
+     return d.value;
+});
+
+var donutsLoHiValue = d3.extent(donuts, function(d){
+     return d.value;
+});
+console.log(donutsMinValue, donutsMaxValue, donutsLoHiValue);
+//console.log(donuts[1].key, donuts[1].value);
+
+//for (var i = 0, len = donuts.length; i < len; i++){
+//     console.log(donuts[i].key, donuts[i].value);
+//}
+
+//donuts.forEach(function(entry){
+//       console.log(entry.key, entry.value); 
+//});
+
+var donutsGreaterThan50 = donuts.filter(function(entry){
+    return entry.value > 50; 
+});
+//console.log("donutsGreaterThan50:", donutsGreaterThan50);
+
+var reformattedDonuts = donuts.map(function(entry){
+    return {
+       donut: entry.key,
+       qty: entry.value  
+     };   
+});
+reformattedDonuts.forEach(function(entry){
+      console.log(entry);
+});
+</script>	
+</body>
+</html>
