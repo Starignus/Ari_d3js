@@ -26,8 +26,8 @@ var data = [
 var w = 800;
 var h = 450;
 var margin = {
-    top: 20,
-    bottom: 40,
+    top: 58,
+    bottom: 72,
     left: 80,
     right: 20
 };
@@ -104,14 +104,22 @@ function plot (params){
 			 .text(function(d,i){
 				  return d.value;
 			 });	
-//We appended a group and give the class of "x axis". In this group we can change the 
-//orientation of our x axis labels. We are going to work
-//within that group. So we use the .selectAll method to select all the "text" elements			 	 
+//We appended the group and give the class of "x axis",then we "call" the xAxis variable there by 
+//appending all the those newly created svg elements into this group. With that we need to extend
+//the statement so that we select all the "text' elements and transform them. For that, we 
+// indent after .call(xAxis) the  ";",at this point in that statement we are working with
+// the xAxis group, so within that group we need to use the .selectAll method to select 
+//all the "text" elements which we just created. The "transform" attribute must be written 
+//in an specific order, you have different outcome if you write first "rotate" and then "translate" 			 	 	 
     this.append("g")
          .classed("x axis",true)
          .attr("transform","translate(" + 0 + "," + height + ")")
          .call(xAxis)
-             .selectAll("text");
+             .selectAll("text")
+             .style("text-anchor", "end")
+             .attr("dx", -8)
+             .attr("dy",8)
+             .attr("transform","translate(0,0) rotate (-45)");
    this.append("g")
          .classed("y axis",true)
          .attr("transform","translate(0,0)")
