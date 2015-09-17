@@ -27,7 +27,7 @@ var w = 800;
 var h = 450;
 var margin = {
     top: 58,
-    bottom: 72,
+    bottom: 125,
     left: 80,
     right: 20
 };
@@ -116,7 +116,28 @@ function plot (params){
    this.append("g")
          .classed("y axis",true)
          .attr("transform","translate(0,0)")
-         .call(yAxis); 		       		                      
+         .call(yAxis);
+// Adding axis labels. We need to "select" the "y" axis, and we do it by using the class "y axis" in line 117. 
+//We don't select all, because we just want to select one element that is labeled as "y axis", and the selector 
+//will be .y.axis, without space, that is critical. So that is selecting any element that has both the class, "y" and
+// "axis". After we append a "text" element. Then the text should be centered vertically on the axis, so 
+//we set it's top postion the half of the height of the "y" axis, which happend to be the 
+//hight of the chart, so we need to concatenate some values. Then we change its position in the 
+// x direction to the left (negative values). 
+   this.select(".y.axis")          		 
+        .append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .style("text-anchor", "middle")
+        .attr("transform","translate(-55," + height/2 + ") rotate (-90)")
+        .text("Units Sold"); 
+   this.select(".x.axis")      
+        .append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .style("text-anchor", "middle")
+        .attr("transform","translate(" + width/2 + ",115)")
+        .text("Donut Type"); 		                      
 }
 plot.call(chart,{
     data: data
