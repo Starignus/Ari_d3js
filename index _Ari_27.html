@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Learning D3</title>
+	<link rel="stylesheet" href="main.css">
+	<script  type="text/javascript" src="d3.min.js"></script>
+</head>
+<body>
+<!--Place all DOM elements here -->
+<script>
+var data = [
+	{key: "Glazed",		value: 132},
+	{key: "Jelly",		value: 71},
+	{key: "Holes",		value: 337},
+	{key: "Sprinkles",	value: 93},
+	{key: "Crumb",		value: 78},
+	{key: "Chocolate",	value: 43},
+	{key: "Coconut", 	value: 20},
+	{key: "Cream",		value: 16},
+	{key: "Cruller", 	value: 30},
+	{key: "Éclair", 	value: 8},
+	{key: "Fritter", 	value: 17},
+	{key: "Bearclaw", 	value: 21}
+];
+var w = 800;
+var h = 450;
+var margin = {
+    top: 58,
+    bottom: 125,
+    left: 80,
+    right: 20
+};
+var width = w - margin.left - margin.right;
+var height = h -margin.top - margin.bottom; 
+var x = d3.scale.ordinal()
+       .domain(data.map(function(entry){
+           return entry.key;
+       }))
+       .rangeBands([0,width]); 
+
+var y =d3.scale.linear()
+       .domain([0,d3.max(data, function(d){
+           return d.value;
+       })])
+       .range([height,0]); 
+var ordinalColorScale = d3.scale.category20();     
+var xAxis = d3.svg.axis()
+               .scale(x) 
+               .orient("bottom");
+var yAxis = d3.svg.axis()
+            .scale(y) 
+            .orient("left"); 
+var yGridlines =  d3.svg.axis()
+                 .scale(y) 
+                 .tickSize(-width,0,0)
+                 .tickFormat("")
+                 .orient("left");                                                                   
+var svg = d3.select("body").append("svg")
+            .attr("id", "chart")
+            .attr("width", w)
+            .attr("height", h);
+var chart = svg.append("g")           
+               .classed ("display", true)
+               .attr("transform", "translate ("+ margin.left + "," + margin.top + ")");
+//We add a button that allows you to resort the data. This will control a "div" with he id's
+//control, and we are going to add into that "div" a button. The reson of doing in this way is
+//in order to add more controls in the futre, we can simply access the control's variable. 
+//So far we have selected the "body" element and assigned to controls, it is not what we 
+//really want to do. WE what to append a "div" in the body element. controls.append("button")
+// we are accessing the div that we have just created and appending a button that we are going to
+//crete. Then we add a new atribute called "state", that will help to determine if the
+//data we want it ascendent on descendent       
+var controls = d3.select("body") 
+                  .append("div") 
+                  .attr("id", "controls");
+var sort_btn = controls.append("button")
+                .html("Sort data: ascending")
+                .attr("state",0);                                
+function plot (params){
+    this.append("g")
+        .classed("gridline", true)
+        .attr("transform","translate(0,0)")
+        .call(params.gridlines); // We change the argument "yGridlines"
+	this.selectAll(".bar") 	
+		.data(params.data)
+		.enter()
+			 .append("rect") 
+			 .classed("bar", true)  
+			 .attr("x",function(d,i){
+				   return x(d.key);
+			 })    
+			 .attr("y", function(d,i){
+				   return y(d.value);
+			 })   	 
+			 .attr("width", function(d,i){ 
+				   return x.rangeBand();
+			 })		 
+			 .attr("height", function(d,i){
+				   return  height-y(d.value);
+			 })
+			 .style("fill",function(d,i){
+			        return ordinalColorScale(i);   
+			 }); 
+	this.selectAll(".bar-label")
+		.data(params.data)
+		.enter()
+			 .append("text") 
+			 .classed("bar-label",true)
+			 .attr("x",function(d,i){
+				  return x(d.key) + (x.rangeBand()/2)  ;
+			 }) 
+			 .attr("dx", 0)
+			 .attr("y", function(d,i){
+				   return y(d.value);
+			 })
+			 .attr("dy", -6) 
+			 .text(function(d,i){
+				  return d.value;
+			 });				 	 	 
+    this.append("g")
+        .classed("x axis",true)
+        .attr("transform","translate(" + 0 + "," + height + ")")
+        .call(params.axis.x) // We change the argument "xAxis"
+             .selectAll("text")
+             .style("text-anchor", "end")
+             .attr("dx", -8)
+             .attr("dy",8)
+             .attr("transform","translate(0,0) rotate (-45)");
+   this.append("g")
+        .classed("y axis",true)
+        .attr("transform","translate(0,0)")
+        .call(params.axis.y); // We change the argument "xAxis"
+   this.select(".y.axis")          		 
+        .append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .style("text-anchor", "middle")
+        .attr("transform","translate(-55," + height/2 + ") rotate (-90)")
+        .text("Units Sold"); 
+   this.select(".x.axis")      
+        .append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .style("text-anchor", "middle")
+        .attr("transform","translate(" + width/2 + ",115)")
+        .text("Donut Type"); 		                      
+}
+//Interactivity code, where we use the d3 methods and function. The "on" method allows us
+//to create an events listener for a certain type of event. So the first even to
+//listen for ("Click"), the second argument is a function to fire. When the user clicks the
+//button we want that the data be sorted descending or ascending. On each call, the local variables
+//are set.
+sort_btn.on("click", function(){
+    var self = d3.select(this); // here "this" refers to the sort button, or element that is calling this function 
+    var state = +self.attr("state"); // the "+" indicates it is a number (default is a string)
+    var txt = "Sort data: ";  
+    if(state === 0){
+        state = 1;
+        txt += "descending";// appending to the txt value a word       
+    } else if(state === 1){
+        state = 0;
+        txt += "ascending";
+    }
+    self.attr("state", state); //setting the state attribute, linking the state value (2nd) to the "state" atribute (1st)
+    self.html(txt); // change the html for the atribute
+});
+
+plot.call(chart,{
+    data: data,
+    axis:{
+       x: xAxis,
+       y: yAxis
+    },
+    gridlines: yGridlines
+});
+</script>	
+</body>
+</html>
