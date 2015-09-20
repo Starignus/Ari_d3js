@@ -60,6 +60,12 @@ var svg = d3.select("body").append("svg")
 var chart = svg.append("g")
 			.classed("display", true)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+//Here the time.function looks for an specifier, and depending on the string its given 
+//what is the format of that string and I know how to turn it into JS date object. We use 
+//the .parse which returns a parse function that uses the format that we specified. 
+var dateParser = d3.time.format("%Y/%m/%d").parse;			
+console.log("2014/01/31");
+console.log(dateParser("2014/01/31"));
 </script>
 </body>
 </html>
