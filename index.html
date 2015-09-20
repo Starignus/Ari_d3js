@@ -61,38 +61,31 @@ var chart = svg.append("g")
 			.classed("display", true)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 var dateParser = d3.time.format("%Y/%m/%d").parse;			
-//Plotting data points
-//X axis is the "date"; To obtain the greatest and lowest values within an array we 
-//use the "d3.extent()" function which returns an array, and the first index is the smallest
-//value in the array, and the second index is largest value. 
 var x = d3.time.scale()
          .domain(d3.extent(data, function(d){
              var date = dateParser(d.date);
              return date;
          }))
          .range([0, width]);
-//Plotting "y", the values in a linear scale           
 var y = d3.scale.linear()
         .domain([0, d3.max(data, function(d){
             return d.value; 
-        })]) //We pass the data set in the range
+        })]) 
         .range([height,0]);
-//Creating a custom plot function
+
 function plot(params){
-     // We need to set up all the phases
-    //enter(); Were we bind our data to our chart within the group .point
-    //"params.data are set inside the "plot.call"
+    //enter()
     this.selectAll(".point")
         .data(params.data)
         .enter()
             .append("circle")
             .classed("point", true)
-            .attr("r",2); //the atribute radius that won't change, 2px
-    //update(); set the properties that will change according with changes in the data
+            .attr("r",2); 
+    //update()        
     this.selectAll(".point")
          .attr("cx", function(d){
              var date = dateParser(d.date);
-             return x(date); //Because the x scale expects a JS object
+             return x(date); 
          })
          .attr("cy",function(d){
              return y(d.value);
@@ -103,11 +96,6 @@ function plot(params){
          .exit()
          .remove();
 }
-//Outside the function we call the plot function that we know how to pass date to this function.  
-//Remember that the first argument is not the first argument of the "plot" function, instead,
-//the first argument is the object that will represent "this" within the function. This is
-//the group that will hold the svg elements. The second argument is "params" that will be 
-//an object, with parameter "data".
 plot.call(chart,{
      data: data
 });      
