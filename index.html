@@ -72,8 +72,26 @@ var y = d3.scale.linear()
             return d.value; 
         })]) 
         .range([height,0]);
-
+//Creating the axis
+var xAxis = d3.svg.axis()
+            .scale(x) 
+            .orient("bottom")
+            .ticks(d3.time.days, 7) // the time interval is 7 days
+            .tickFormat(d3.time.format("%m/%d"));
+var yAxis = d3.svg.axis()
+            .scale(y) 
+            .orient("left")
+            .ticks(5); 
 function plot(params){
+     //We don't initialise the axis as in the example before with bars 
+     this.append("g")
+			.classed("x axis", true)
+			.attr("transform", "translate(0," + height + ")")
+			.call(params.axis.x);
+     this.append("g")
+			.classed("y axis", true)
+			.attr("transform", "translate(0,0)")
+			.call(params.axis.y);
     //enter()
     this.selectAll(".point")
         .data(params.data)
@@ -97,7 +115,11 @@ function plot(params){
          .remove();
 }
 plot.call(chart,{
-     data: data
+     data: data,
+     axis:{ // We are creating an entry on axis, and creating an object that has the two axis to use
+        x: xAxis,
+        y: yAxis
+    },
 });      
 </script>
 </body>
