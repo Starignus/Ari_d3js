@@ -144,13 +144,36 @@ function plot (params){
          
     //Draw the axes and axes labels
     drawAxis.call(this, params)  
-      
+
+//We used d3 in order to handel events on an external html element, by external it's meant 
+// external to the SVG element which is represented by the green are on the page. Remember
+//that d3 is only a library to manipulate the DOM and the button is part of the DOM. We
+//will add interactivity directly on the elements within the SVG elements. We will look for
+//adding response to the mouse events attached to each of the bars. We add the interactivity  
+//in the section where we plot the bars.     
     // enter()
 	this.selectAll(".bar") 	
 		.data(params.data)
 		.enter()
 			 .append("rect")
-			 .classed("bar", true);
+			 .classed("bar", true)
+			 //We will use the "on" method to add mouse events (d:data,i:index of current element)
+			 .on("mouseover", function(d,i){
+			     //adding a rollover effect. "this" is different than the "this" in 161 
+			     // that is representative of "chart"; becasuse we are in a function. 
+			     //In JS "this" represents the color of the object. The arguments in "style
+			     //are:1st is the css element to affect, second is the color.
+			     d3.select(this).style("fill", "yellow");
+			 })
+			//If you move the mouse within the area of this bar it's going to fire this 
+			//function. We need to know if the mouse is over or out the bar. The first 
+			//argument refers to what the function will respond to.
+			 .on("mousemove", function(d,i){
+			     
+			 })
+			 .on("mouseout", function(d,i){
+			     d3.select(this).style("fill", ordinalColorScale(i));
+			 });
 			 
 	this.selectAll(".bar-label")
 		.data(params.data)

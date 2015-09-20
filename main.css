@@ -10,28 +10,32 @@ body,html{
 	border: 1px solid #CCC;
 }
 .bar{
-    fill: purple;
-    shape-rendering: crispEdges;
+	fill: purple;
+	shape-rendering: crispEdges;
 }
 .bar-label{
-    text-anchor:middle;
-    fill: #000;
-    font-size:18px;
+	fill: black;
+	text-anchor: middle;
+	font-size: 18px;
 }
 .axis path,
 .axis line{
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+.gridline path,
+.gridline line{
+	fill: none;
+	stroke: #ccc;
+	shape-rendering: crispEdges;
 }
 .axis text{
 	font-family: sans-serif;
 	font-size: 20px;
 			}
-.gridline path,
-.gridline line{
-    fill: none;
-    stroke: #ccc;
-    shape-rendering: crispEdges;
+.trendline{
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 4px;
 }
-
