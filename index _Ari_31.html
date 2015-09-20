@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>Learning D3</title>
@@ -43,7 +41,7 @@ var y = d3.scale.linear()
         .domain([0, d3.max(data, function(d){
             return d.value;
         })])
-        .range([height, 0]); 
+        .range([height, 0]);  
 var ordinalColorScale = d3.scale.category20();     
 var xAxis = d3.svg.axis()
             .scale(x) 
@@ -68,9 +66,7 @@ var controls = d3.select("body")
                 .attr("id", "controls");
 var sort_btn = controls.append("button")
                 .html("Sort data: ascending")
-                .attr("state", 0);       
-//We will create a function that helps to draw the labels with every update without
-//drawing one on the top of the other         
+                .attr("state", 0);           
 function drawAxis(params){
 
     if(params.initialize === true){
@@ -87,18 +83,16 @@ function drawAxis(params){
 			.attr("transform", "translate(" + 0 + "," + height + ")")
 			.call(params.axis.x) 
 				.selectAll("text")
-				   //We just want to affect the axis tick's labels, not the label for the axis
-				   //So we classed them differently in orer to be able to select specifically that axis text 
-			         .classed("x-axis-label", true)
-					 .style("text-anchor", "end")
-					 .attr("dx", -8)
-					 .attr("dy", 8)
-					 .attr("transform","translate(0,0) rotate(-45)");
+			        .classed("x-axis-label", true)
+				    .style("text-anchor", "end")
+				    .attr("dx", -8)
+				    .attr("dy", 8)
+				    .attr("transform", "translate(0,0) rotate(-45)");
 					 
 	    //This is the y axis          
 	    this.append("g")
-			.classed("y axis", true)
-			.attr("transform", "translate(0,0)")
+	 	   	.classed("y axis", true)
+	 		.attr("transform", "translate(0,0)")
 			.call(params.axis.y);
 			
 	    //This is the y label     
@@ -107,7 +101,7 @@ function drawAxis(params){
 			.attr("x", 0)
 			.attr("y", 0)
 			.style("text-anchor", "middle")
-			.attr("transform","translate(-55," + height/2 + ") rotate(-90)")
+			.attr("transform", "translate(-55," + height/2 + ") rotate(-90)")
 			.text("Units Sold"); 
 			
 	    //This is the x label     
@@ -120,35 +114,37 @@ function drawAxis(params){
 			.text("Donut Type"); 
             
     } else if(params.initialize === false){
-          //Update info
-          //We are saying:select all the axis within a group of the class "x" and "axis".
-          //We are affirming the transformations we did in that axis, because we updated 
-          //the text with the first call "this.selectAll(g.x.axis)" and  transformed with 
-          //the second call in "this.selectAll(.x-axis-label)". If we do not do this it will
-          //just reoriented the text that wasn't updated. So we need to reapply those tranformations 
+          //Update info 		
           this.selectAll("g.x.axis")
+          	  .transition() 
+			  .duration(500)
+			  .ease("bounce")
+			  .delay(500)          
               .call(params.axis.x);//this will update the x axis
           this.selectAll(".x-axis-label")
               .style("text-anchor", "end")
               .attr("dx", -8)
 			  .attr("dy", 8)
 			  .attr("transform", "translate(0,0) rotate (-45)");   
-          this.selectAll("g.y.axis")    
+          this.selectAll("g.y.axis")   
+          	  .transition() 
+			  .duration(500)
+			  .ease("bounce")
+			  .delay(500)                
               .call(params.axis.y);
     }        
 }
-function plot(params){
+function plot (params){
     x.domain(data.map(function(entry){
             return entry.key;
         }));
     y.domain([0, d3.max(data, function(d){
             return d.value;
-        })]);  
-    //.call function lets us explicitly define what "this" will be within drawAxis()
-    // If we don't use that call this will fail. So it's important.  
-    //Draw the axes and axes labels   
-    drawAxis.call(this, params); // WE pass "this", and "params" from the plot function 
-       
+       })]);
+         
+    //Draw the axes and axes labels
+    drawAxis.call(this, params)  
+      
     // enter()
 	this.selectAll(".bar") 	
 		.data(params.data)
@@ -163,26 +159,39 @@ function plot(params){
 			 .classed("bar-label", true);
 			 
     //update()
+// We can have a bar transition, and this function allow us to create animations between
+//states. We can use it before the attributes. We can use also the "duration" function 
+//where we can set the time in milliseconds. We can use also the function "ease()" where
+//we specify the string "bounce". Also we can delay() and passing milliseconds to it. 
+//We can apply this also to the axis function.
 	this.selectAll(".bar")	   
-		 .attr("x", function(d,i){
+	     .transition() 
+	     .duration(500)
+	     .ease("bounce")
+	     .delay(500)		 			 	     		 			 	      		 			 	     
+		 .attr("x",function(d,i){
 			   return x(d.key);
 		 })    
 		 .attr("y", function(d,i){
 			   return y(d.value);
 		 })   	 
-		 .attr("width", function(d){ 
+		 .attr("width", function(d,i){ 
 			   return x.rangeBand();
 		 })		 
 		 .attr("height", function(d,i){
-			   return  height - y(d.value);
+			   return  height-y(d.value);
 		 })
-		 .style("fill", function(d,i){
+		 .style("fill",function(d,i){
 				return ordinalColorScale(i);   
 		 }); 
 		 
-	this.selectAll(".bar-label")	 			 
-		 .attr("x", function(d,i){
-			  return x(d.key) + (x.rangeBand()/2);
+	this.selectAll(".bar-label")
+	     .transition()
+	     .duration(500) 
+	     .ease("bounce")
+	     .delay(500)		 			 
+		 .attr("x",function(d,i){
+			  return x(d.key) + (x.rangeBand()/2)  ;
 		 }) 
 		 .attr("dx", 0)
 		 .attr("y", function(d,i){
@@ -191,9 +200,8 @@ function plot(params){
 		 .attr("dy", -6) 
 		 .text(function(d){
 			  return d.value;
-		 });	
-		 	
-    //exit() 
+		 });		
+//exit() 
     this.selectAll(".bar") 	
 		.data(params.data) 
 		.exit()
@@ -204,7 +212,6 @@ function plot(params){
 		.exit()
 		.remove();						 	 			                      
 }  
-
 sort_btn.on("click", function(){
     var self = d3.select(this); 
     var ascending = function(a,b){
@@ -236,14 +243,6 @@ sort_btn.on("click", function(){
 		initialize: false
 	});
 });
-// When the chart's data is updated, we are using the updated portion of d3 in order to just  
-//update the bound data. We need to do the same thing with the axes, when it's loaded we
-//just need to draw the axes and when it's updated we need to updated it not draw them again.
-//To do that we create a custom parameter call to initialise. We add an argument to params 
-//object. We set it "true", because the first time we call plot we want to initialise the
-//chart. If we want to call it with each button press we have to et it "false" above (where
-//we call plot again) because it has been already initialsed. Then within drawAxis we need
-//to create some conditional logic.    
 plot.call(chart,{
     data: data,
     axis:{
