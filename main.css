@@ -39,3 +39,9 @@ body,html{
 	stroke: #ccc;
 	stroke-width: 4px;
 }
+.area{
+    opacity: 0.25;
+   	fill: #ccc;
+	stroke: #ccc;
+	stroke-width: 1px; 
+}

@@ -91,14 +91,17 @@ var line = d3.svg.line()
              .y(function(d){
                 return y(d.value);  
              })
-// We need to use the "line" generated function within our custom path function, as we did 
-//with the data points when appending of "circles" (in enter(), update(), and exit()). 
-//Except that the path doesn't have elements, instead we are generating that string for the path.
-//Remember the draw order in terms of stacking, is determine of what is drawn earlier or 
-//later in the code. If we want our line to appear underneath the points, then write the 
-//code before the points are created. If you want to be drawn on the top of the points
-//write the code after the points have been created. Here we want underneath because we
-//want to see the points. 
+//Shading area: Area is a path in d3 that will be filled in with some css and we have to 
+//denote 2D data for the "y" axis 
+var area = d3.svg.area()
+            .x(function(d){
+                var date = dateParser(d.date);
+                return x(date);            
+            })
+            .y0(height)
+            .y1(function(d){
+                 return y(d.value);        
+            })
 function plot(params){
      this.append("g")
 			.classed("x axis", true)
@@ -110,9 +113,14 @@ function plot(params){
 			.call(params.axis.y);
     //enter()
     //Underneath the points
+    this.selectAll(".area")
+         .data([params.data]) 
+         .enter()              
+            .append("path")
+            .classed("area", true); 
     this.selectAll(".trendline")
-         .data([params.data]) // Enclose the data source within an array which is going to interfere with the line generator 
-        .enter()              // to produce a very long string that will be used bye d3
+         .data([params.data]) 
+        .enter()              
             .append("path")
             .classed("trendline", true);                  
     this.selectAll(".point")
@@ -123,6 +131,10 @@ function plot(params){
             .attr("r",2); 
             
     //update() 
+    this.selectAll(".area")
+         .attr("d", function(d){
+            return area(d);
+         })           
     this.selectAll(".trendline")
          .attr("d", function(d){
             return line(d);
@@ -137,6 +149,10 @@ function plot(params){
          })     
     //exit()
     //Underneath the points 
+    this.selectAll(".area")
+         .data([params.data])
+         .exit()
+         .remove();     
     this.selectAll(".trendline")
          .data([params.data])
          .exit()
