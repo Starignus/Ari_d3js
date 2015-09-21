@@ -90,7 +90,8 @@ var line = d3.svg.line()
              })
              .y(function(d){
                 return y(d.value);  
-             })
+             }) //We will add an interpolation to add a path between data
+             .interpolate("monotone");
 //Shading area: Area is a path in d3 that will be filled in with some css and we have to 
 //denote 2D data for the "y" axis 
 var area = d3.svg.area()
@@ -102,6 +103,7 @@ var area = d3.svg.area()
             .y1(function(d){
                  return y(d.value);        
             })
+            .interpolate("monotone");
 function plot(params){
      this.append("g")
 			.classed("x axis", true)
