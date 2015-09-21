@@ -82,8 +82,24 @@ var yAxis = d3.svg.axis()
             .scale(y) 
             .orient("left")
             .ticks(5); 
+// Creating line, but we are creating a path element: http://www.w3.org/TR/SVG/paths.html
+var line = d3.svg.line()
+             .x(function(d){
+                var date = dateParser(d.date);
+                return x(date);
+             })
+             .y(function(d){
+                return y(d.value);  
+             })
+// We need to use the "line" generated function within our custom path function, as we did 
+//with the data points when appending of "circles" (in enter(), update(), and exit()). 
+//Except that the path doesn't have elements, instead we are generating that string for the path.
+//Remember the draw order in terms of stacking, is determine of what is drawn earlier or 
+//later in the code. If we want our line to appear underneath the points, then write the 
+//code before the points are created. If you want to be drawn on the top of the points
+//write the code after the points have been created. Here we want underneath because we
+//want to see the points. 
 function plot(params){
-     //We don't initialise the axis as in the example before with bars 
      this.append("g")
 			.classed("x axis", true)
 			.attr("transform", "translate(0," + height + ")")
@@ -93,13 +109,24 @@ function plot(params){
 			.attr("transform", "translate(0,0)")
 			.call(params.axis.y);
     //enter()
+    //Underneath the points
+    this.selectAll(".trendline")
+         .data([params.data]) // Enclose the data source within an array which is going to interfere with the line generator 
+        .enter()              // to produce a very long string that will be used bye d3
+            .append("path")
+            .classed("trendline", true);                  
     this.selectAll(".point")
         .data(params.data)
         .enter()
             .append("circle")
             .classed("point", true)
             .attr("r",2); 
-    //update()        
+            
+    //update() 
+    this.selectAll(".trendline")
+         .attr("d", function(d){
+            return line(d);
+         })            
     this.selectAll(".point")
          .attr("cx", function(d){
              var date = dateParser(d.date);
@@ -109,6 +136,11 @@ function plot(params){
              return y(d.value);
          })     
     //exit()
+    //Underneath the points 
+    this.selectAll(".trendline")
+         .data([params.data])
+         .exit()
+         .remove();           
     this.selectAll(".point")
          .data(params.data)
          .exit()
@@ -116,7 +148,7 @@ function plot(params){
 }
 plot.call(chart,{
      data: data,
-     axis:{ // We are creating an entry on axis, and creating an object that has the two axis to use
+     axis:{
         x: xAxis,
         y: yAxis
     },
