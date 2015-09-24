@@ -40,35 +40,35 @@ var responseScale = d3.scale.linear()
 					.domain(d3.extent(data, function(d){
 						 return d.responses;
 					}))
-					.range([2,15]) //smallest and largest radius we will use       
-//Creating a custom plot function
+					.range([2,15])        
+//Creating a custom plot function: Using all the data in array for donuts
+//we are using the "keys" function of d3 to grab the properties items.
+//We use later a filter since the last two properties aren't donuts.
+//After we create a group element for each of the donuts types.
 function plot(params){
-    //enter()
-    this.selectAll(".point") //appending the data
-         .data(params.data)
-         .enter()
-             .append("circle")
-             .classed("point",true); 
-    //update()
-    //Scaling our data according with the number of responses data
-    //In between values need a little bit help visually that gives a better differentiation 
-    //So we create a scale that we can use to scale the size of the points: responseScale 
-    this.selectAll(".point")
-         .attr("r", function(d){
-               return responseScale(d.responses);
-         })
-         .attr("cx", function(d){
-			  return x(d.age);
-		 })	  
-         .attr("cy", function(d){
-			  return y(d.glazed);
-		  });		 		 		     
-	//exit()
-    this.selectAll(".point")
-             .data(params.data)
-             .exit()
-             .remove();  	
-}
+     var this = seld;
+     var donuts = d3.keys(params.data[0]).filter(function(d){
+          return d !== "age" && d !== "responses"
+     });
+     //enter()
+     this.selectAll(".donuts")
+     .data(donuts) //binding to the new donuts array  
+     .enter()
+         .append("g") //appending group
+         .attr("class", function(d){ //Setting the class manually 
+                return d; //return the name of the donut as the class. This allows to
+         })               //make it dynamically (we will get 4 groups of donuts and class "donut")
+         .classed("donut", true);//we are setting here an additional class of donut (no dynamic one)
+     //Setting the data
+     //"this" within"donuts.forEach" do not refer to "chart", that does outside outside. 
+     //"this" depends on context. We fix it by declaring a variable outside call self 
+     //see at the top. We are storing the variable of "this" inside the main function which
+     //is "chart".
+     donuts.forEach(function(donut){
+         var g = this.selectAll("g."+donut);
+         console.log(g);
+     });    
+} 
 plot.call(chart,{
      data: data  
 })               			       
