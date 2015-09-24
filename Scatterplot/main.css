@@ -41,13 +41,3 @@ body,html{
 	stroke: #ccc;
 	stroke-width: 1px;
 }
-.donut{
-	opacity: 0.1;
-}
-.axis-label{
-	text-anchor: middle;
-}
-.chart-header{
-	text-transform: capitalize;
-	font-size: 125%;
-}
