@@ -30,12 +30,17 @@ var chart = svg.append("g")
 //x and y scale
 var x = d3.scale.linear()
         .domain(d3.extent(data, function(d){
-            return d.age;   //If the data changes we can use extent to get the lowest and
-        }))                //highest vales.
+            return d.age;   
+        }))                
         .range([0,width]);
-var y = d3.scale.linear() // y axis is the average score for each type of donut
-        .domain([1,5])//here we don't use extent because it goes from 1 to 5, we need a clean axis    
+var y = d3.scale.linear() 
+        .domain([1,5])    
         .range([height,0]);  
+var responseScale = d3.scale.linear() 
+					.domain(d3.extent(data, function(d){
+						 return d.responses;
+					}))
+					.range([2,15]) //smallest and largest radius we will use       
 //Creating a custom plot function
 function plot(params){
     //enter()
@@ -45,8 +50,13 @@ function plot(params){
              .append("circle")
              .classed("point",true); 
     //update()
+    //Scaling our data according with the number of responses data
+    //In between values need a little bit help visually that gives a better differentiation 
+    //So we create a scale that we can use to scale the size of the points: responseScale 
     this.selectAll(".point")
-         .attr("r", 2)
+         .attr("r", function(d){
+               return responseScale(d.responses);
+         })
          .attr("cx", function(d){
 			  return x(d.age);
 		 })	  
@@ -57,11 +67,11 @@ function plot(params){
     this.selectAll(".point")
              .data(params.data)
              .exit()
-             .remove(); //removing all the data that is not bound anymore   	
+             .remove();  	
 }
 plot.call(chart,{
-     data: data  //Within the {} we have "params". With the first "data:" as the property
-})               //name and "data" after ":" as the data source  			       
+     data: data  
+})               			       
 </script>
 </body>
 </html>
