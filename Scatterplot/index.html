@@ -27,6 +27,41 @@ var svg = d3.select("body").append("svg")
 var chart = svg.append("g")
 			.classed("display", true)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+//x and y scale
+var x = d3.scale.linear()
+        .domain(d3.extent(data, function(d){
+            return d.age;   //If the data changes we can use extent to get the lowest and
+        }))                //highest vales.
+        .range([0,width]);
+var y = d3.scale.linear() // y axis is the average score for each type of donut
+        .domain([1,5])//here we don't use extent because it goes from 1 to 5, we need a clean axis    
+        .range([height,0]);  
+//Creating a custom plot function
+function plot(params){
+    //enter()
+    this.selectAll(".point") //appending the data
+         .data(params.data)
+         .enter()
+             .append("circle")
+             .classed("point",true); 
+    //update()
+    this.selectAll(".point")
+         .attr("r", 2)
+         .attr("cx", function(d){
+			  return x(d.age);
+		 })	  
+         .attr("cy", function(d){
+			  return y(d.glazed);
+		  });		 		 		     
+	//exit()
+    this.selectAll(".point")
+             .data(params.data)
+             .exit()
+             .remove(); //removing all the data that is not bound anymore   	
+}
+plot.call(chart,{
+     data: data  //Within the {} we have "params". With the first "data:" as the property
+})               //name and "data" after ":" as the data source  			       
 </script>
 </body>
 </html>
