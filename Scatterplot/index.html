@@ -35,42 +35,60 @@ var x = d3.scale.linear()
         .range([0,width]);
 var y = d3.scale.linear() 
         .domain([1,5])    
-        .range([height,0]);  
+        .range([height,0]);
+//Axes           
+var yAxis = d3.svg.axis()
+             .scale(y)
+             .ticks(5)
+             .tickSize(20) // Push the ticks to the left in order that the data do not overlap with them
+             .tickFormat(function(d){
+                 return d.toFixed(1) //Returns a string with 1 decimal place
+             })
+             .orient("left");    
+var yGridlines = d3.svg.axis()
+                  .scale(y)
+                  .tickSize(-width,0,0)
+				 .tickFormat("")                  
+                  .orient("left");                  
 var responseScale = d3.scale.linear() 
-					.domain(d3.extent(data, function(d){
+					 .domain(d3.extent(data, function(d){
 						 return d.responses;
-					}))
-					.range([2,15])        
-//Creating a custom plot function: Using all the data in array for donuts
-//we are using the "keys" function of d3 to grab the property names for the first index items.
-//The reason to use the first it's because the property names are for all the index items:
-//"glazed", "jelly", "powder", "sprinkle", responses" 
-//We use later a filter since the last two properties aren't donuts (we are filtering out).
-//After we create a group element for each of the donuts types.
+					 }))
+					 .range([2,15])   
+//draw axis function, we initialised this in case we want to draw the data dynamically,
+//we won't redraw continuously the axis   
+function drawAxis(params){ 
+    if(params.initialize){
+	   //draw Gridlines 
+		this.append("g")
+			.classed("gridline y", true)
+			.attr("transform", "translate(0,0)")
+			.call(params.axis.gridlines.y); 
+	    //draw x axis        
+		this.append("g")
+			.classed("axis y", true)
+			.attr("transform", "translate(0,0)")
+			.call(params.axis.y)    
+    }
+}					     
 function plot(params){
+     drawAxis.call(this,params);
      var self = this;
      var donuts = d3.keys(params.data[0]).filter(function(d){
           return d !== "age" && d !== "responses";
      });
      //enter()
      this.selectAll(".donuts")
-		 .data(donuts) //binding to the new donuts array  
+		 .data(donuts) 
 		 .enter()
-			 .append("g") //appending group
-			 .attr("class", function(d){ //Setting the class manually 
-					return d; //return the name of the donut as the class. This allows to
-			 })               //make it dynamically (we will get 4 groups of donuts and class "donut")
-			 .classed("donut", true);//we are setting here an additional class of donut (no dynamic one)
-     //Setting the data
-     //"this" within "donuts.forEach" do not refer to "chart", that does outside. 
-     //"this" depends on context. We fix it by declaring a variable outside call self 
-     //(see at the top). We are storing the variable of "this" inside the main function which
-     //is "chart". So instead of "this" within "donuts.forEach" function will be "self".
-     //After we have to create an array that has donut: "data" and "age" and "responses".
+			 .append("g")
+			 .attr("class", function(d){ 
+					return d; 
+			 })              
+			 .classed("donut", true);
+ 
      donuts.forEach(function(donut){
 			 var g = self.selectAll("g."+donut);   
-			 //array containing one donut type, age and responses.map function goes through 
-			 //the array and returns values according to a function that we create.
 			 var arr = params.data.map(function(d){
 				  return {
 					  key: donut,
@@ -104,8 +122,15 @@ function plot(params){
      });    
 } 
 plot.call(chart,{
-     data: data  
-})               			       
+     data: data,
+     axis:{
+        y: yAxis,
+        gridlines: {
+           y: yGridlines
+        }
+     },
+	 initialize: true
+});               			       
 </script>
 </body>
 </html>
