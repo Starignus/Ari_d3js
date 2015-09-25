@@ -15,7 +15,7 @@ var h = 450;
 var margin = {
 	top: 60,
 	bottom: 80,
-	left: 80,
+	left: 100,
 	right: 80
 };
 var width = w - margin.left - margin.right;
@@ -89,7 +89,23 @@ function drawAxis(params){
 		this.append("g")
 			.classed("axis y", true)
 			.attr("transform", "translate(0,0)")
-			.call(params.axis.y)    
+			.call(params.axis.y)
+		// labels
+		this.select(".y.axis")
+		     .append("text")
+		     .classed("y axis-label", true)
+		     .attr("transform", "translate(" + -56 + "," + height/2 + ") rotate(-90)")
+		     .text("Rating (1= Low, 5=High)")
+		this.select(".x.axis")
+		     .append("text")
+		     .classed("x axis-label", true)
+		     .attr("transform", "translate(" + width/2 + "," + 48 + ")")
+		     .text("Customer Age");
+		this.append("g")
+		     .append("text")
+		     .classed("chart-header", true)
+		     .attr("transform", "translate(0,-24)")
+		     .text("");
     }
 }					     
 function plot(params){
@@ -113,9 +129,8 @@ function plot(params){
           .style("fill", function(d,i){
                return colorScale(i); 
           }) 
-          //Adding interactivity: Mouse over the data set it will fade in, and mouse out date wool fade out  
           .on("mouseover", function(d,i){
-              d3.select(this)//we are within a function, so "this" is different to our external "this"
+              d3.select(this)
                  .transition()
                  .style("opacity",1)            
           })
@@ -151,6 +166,16 @@ function plot(params){
 			   .attr("cy", function(d){
 					return y(d.value);
 			   })
+			    .on("mouseover", function(d,i){
+			        var str = d.key + "Donut: ";
+			        str += "Age " + d.age + " ";
+			        str += "Responses " + d.responses + " ";
+			        str += "Average Rating " + d.value + " ";			        
+			        d3.select(".chart-header").text(str);
+			    })
+			    .on("mouseout", function(d,i){
+			        d3.select(".chart-header").text("");			    
+			    })			    
 			 //exit()     
 			  g.selectAll(".response")
 				 .data(arr)
