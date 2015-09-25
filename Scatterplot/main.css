@@ -41,3 +41,6 @@ body,html{
 	stroke: #ccc;
 	stroke-width: 1px;
 }
+.donut{
+   opacity: 0.1;
+}

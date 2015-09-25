@@ -27,6 +27,8 @@ var svg = d3.select("body").append("svg")
 var chart = svg.append("g")
 			.classed("display", true)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+// Data colour scale
+var colorScale = d3.scale.category10();
 //x and y scale
 var x = d3.scale.linear()
         .domain(d3.extent(data, function(d){
@@ -96,8 +98,8 @@ function plot(params){
      var donuts = d3.keys(params.data[0]).filter(function(d){
           return d !== "age" && d !== "responses";
      });
-     //enter()
-     this.selectAll(".donuts")
+     //enter() for <g>; the groups
+     this.selectAll(".donut")
 		 .data(donuts) 
 		 .enter()
 			 .append("g")
@@ -105,7 +107,13 @@ function plot(params){
 					return d; 
 			 })              
 			 .classed("donut", true);
- 
+			 
+	//update for <g>, here we change the css for the opacity (data fade out)		 
+     this.selectAll(".donut")
+          .style("fill", function(d,i){
+               return colorScale(i); // i is the index of the data that is bound to that object
+          }); //We choose the style we will be affecting when updating   
+
      donuts.forEach(function(donut){
 			 var g = self.selectAll("g."+donut);   
 			 var arr = params.data.map(function(d){
