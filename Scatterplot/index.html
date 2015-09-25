@@ -111,9 +111,19 @@ function plot(params){
 	//update for <g>, here we change the css for the opacity (data fade out)		 
      this.selectAll(".donut")
           .style("fill", function(d,i){
-               return colorScale(i); // i is the index of the data that is bound to that object
-          }); //We choose the style we will be affecting when updating   
-
+               return colorScale(i); 
+          }) 
+          //Adding interactivity: Mouse over the data set it will fade in, and mouse out date wool fade out  
+          .on("mouseover", function(d,i){
+              d3.select(this)//we are within a function, so "this" is different to our external "this"
+                 .transition()
+                 .style("opacity",1)            
+          })
+          .on("mouseout", function(d,i){
+              d3.select(this)
+                 .transition()              
+                 .style("opacity",0.1)            
+          });
      donuts.forEach(function(donut){
 			 var g = self.selectAll("g."+donut);   
 			 var arr = params.data.map(function(d){
