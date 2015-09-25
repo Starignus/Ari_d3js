@@ -40,31 +40,50 @@ var y = d3.scale.linear()
 var yAxis = d3.svg.axis()
              .scale(y)
              .ticks(5)
-             .tickSize(20) // Push the ticks to the left in order that the data do not overlap with them
+             .tickSize(20) 
              .tickFormat(function(d){
-                 return d.toFixed(1) //Returns a string with 1 decimal place
+                 return d.toFixed(1) 
              })
-             .orient("left");    
+             .orient("left");
+//Explicitly setting tick values              
+var tickValues = [18,25,32,39,46,53,61,67,74];             
+var xAxis = d3.svg.axis()
+             .scale(x)
+             .tickValues(tickValues) 
+             .orient("bottom");   
+var xGridlines = d3.svg.axis()                  
+                  .scale(x)
+                  .tickValues(tickValues)
+                  .tickSize(-height,-height)
+				  .tickFormat("")                   
+                  .orient("bottom");                                                           
 var yGridlines = d3.svg.axis()
                   .scale(y)
                   .tickSize(-width,0,0)
-				 .tickFormat("")                  
+				  .tickFormat("")                  
                   .orient("left");                  
 var responseScale = d3.scale.linear() 
 					 .domain(d3.extent(data, function(d){
 						 return d.responses;
 					 }))
 					 .range([2,15])   
-//draw axis function, we initialised this in case we want to draw the data dynamically,
-//we won't redraw continuously the axis   
 function drawAxis(params){ 
     if(params.initialize){
 	   //draw Gridlines 
 		this.append("g")
 			.classed("gridline y", true)
+			.attr("transform", "translate(0," + height + ")")
+			.call(params.axis.gridlines.x); 	   
+		this.append("g")
+			.classed("gridline y", true)
 			.attr("transform", "translate(0,0)")
 			.call(params.axis.gridlines.y); 
 	    //draw x axis        
+		this.append("g")
+			.classed("axis x", true)
+			.attr("transform", "translate(0," + height + ")")
+			.call(params.axis.x)			
+	    //draw y axis        
 		this.append("g")
 			.classed("axis y", true)
 			.attr("transform", "translate(0,0)")
@@ -92,7 +111,7 @@ function plot(params){
 			 var arr = params.data.map(function(d){
 				  return {
 					  key: donut,
-					  value: d[donut], //current entry with the key "donut" d[glazed]
+					  value: d[donut], 
 					  age: d.age,
 					  responses: d.responses
 				  };    
@@ -124,8 +143,10 @@ function plot(params){
 plot.call(chart,{
      data: data,
      axis:{
+        x: xAxis,
         y: yAxis,
         gridlines: {
+           x: xGridlines,        
            y: yGridlines
         }
      },
