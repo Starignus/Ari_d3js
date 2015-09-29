@@ -3,12 +3,11 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Learning D3</title>
-	<link rel="stylesheet" href="main.css">
-	<script  type="text/javascript" src="d3.min.js"></script>
+	<link rel="stylesheet" href="./static/main.css">
+	<script  type="text/javascript" src="./static/d3.min.js"></script>
 </head>
 <body>
 <!--the script bellow will bring the data as it were in place, and "var data" is accessible-->
-<script  type="text/javascript" src="survey_data.js"></script>
 <script>
 var w = 800;
 var h = 450;
@@ -30,10 +29,7 @@ var chart = svg.append("g")
 // Data colour scale
 var colorScale = d3.scale.category10();
 //x and y scale
-var x = d3.scale.linear()
-        .domain(d3.extent(data, function(d){
-            return d.age;   
-        }))                
+var x = d3.scale.linear()              
         .range([0,width]);
 var y = d3.scale.linear() 
         .domain([1,5])    
@@ -64,11 +60,8 @@ var yGridlines = d3.svg.axis()
                   .tickSize(-width,0,0)
 				  .tickFormat("")                  
                   .orient("left");                  
-var responseScale = d3.scale.linear() 
-					 .domain(d3.extent(data, function(d){
-						 return d.responses;
-					 }))
-					 .range([2,15])   
+var responseScale = d3.scale.linear()
+					.range([2,15])    
 function drawAxis(params){ 
     if(params.initialize){
 	   //draw Gridlines 
@@ -109,11 +102,17 @@ function drawAxis(params){
     }
 }					     
 function plot(params){
-     drawAxis.call(this,params);
-     var self = this;
-     var donuts = d3.keys(params.data[0]).filter(function(d){
-          return d !== "age" && d !== "responses";
-     });
+     x.domain(d3.extent(params.data, function(d){
+		return d.age;   
+	 }));  
+	 responseScale.domain(d3.extent(params.data, function(d){
+		 return d.responses;
+	 }));	
+	 drawAxis.call(this,params);
+	 var self = this;
+	 var donuts = d3.keys(params.data[0]).filter(function(d){
+		  return d !== "age" && d !== "responses";
+	 });
      //enter() for <g>; the groups
      this.selectAll(".donut")
 		 .data(donuts) 
@@ -183,18 +182,25 @@ function plot(params){
 				 .remove();
      });    
 } 
-plot.call(chart,{
-     data: data,
-     axis:{
-        x: xAxis,
-        y: yAxis,
-        gridlines: {
-           x: xGridlines,        
-           y: yGridlines
-        }
-     },
-	 initialize: true
-});               			       
+// First argument is the file we want to apen and the second is a function to fired;
+//the first argument is the "error" code, and the second is the name of the data as it 
+//comes back 
+d3.csv("/static/survey_data.csv", function(error, parsed_data){
+    console.log("Second");
+	plot.call(chart,{
+		 data: parsed_data,
+		 axis:{
+			x: xAxis,
+			y: yAxis,
+			gridlines: {
+			   x: xGridlines,        
+			   y: yGridlines
+			}
+		 },
+		 initialize: true
+	})
+}); 
+console.log("S");              			       
 </script>
 </body>
 </html>
