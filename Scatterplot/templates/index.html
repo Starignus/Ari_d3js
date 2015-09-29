@@ -186,7 +186,6 @@ function plot(params){
 //the first argument is the "error" code, and the second is the name of the data as it 
 //comes back 
 d3.csv("/static/survey_data.csv", function(error, parsed_data){
-    console.log("Second");
 	plot.call(chart,{
 		 data: parsed_data,
 		 axis:{
@@ -200,7 +199,6 @@ d3.csv("/static/survey_data.csv", function(error, parsed_data){
 		 initialize: true
 	})
 }); 
-console.log("S");              			       
 </script>
 </body>
 </html>
