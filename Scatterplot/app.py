@@ -11,6 +11,6 @@ def index():
 
 # This line fires up the server if we want to run that file as a standalone application
 if __name__ == '__main__':
-    app.run(debug=True)  
+#    app.run(debug=True)  
 # To put a different port    
-#     app.run(debug=True, port=8888)  
+     app.run(debug=True, port=8888)  
